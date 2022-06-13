@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="cv_order_cust_view" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="true">
+<descriptions defaultDescription="cv_order_cust_view"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="order_data">
+    <resourceUri>order_data</resourceUri>
+  </DataSource>
+  <DataSource id="customer_data">
+    <resourceUri>customer_data</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="OID"/>
+      <viewAttribute id="CID"/>
+      <viewAttribute id="Order_Date"/>
+      <viewAttribute id="Quantity"/>
+      <viewAttribute id="Amount"/>
+      <viewAttribute id="Discount"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="order_data"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+    <viewAttributes>
+      <viewAttribute id="CID"/>
+      <viewAttribute id="CNAME"/>
+      <viewAttribute id="CCITY"/>
+      <viewAttribute id="CCOUNTRY"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="customer_data"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinType="leftOuter" optimizeJoinColumns="false">
+    <viewAttributes>
+      <viewAttribute id="OID"/>
+      <viewAttribute id="CID"/>
+      <viewAttribute id="Order_Date"/>
+      <viewAttribute id="CNAME"/>
+      <viewAttribute id="CCITY"/>
+      <viewAttribute id="Quantity" aggregationType="sum"/>
+      <viewAttribute id="Amount" aggregationType="sum"/>
+      <viewAttribute id="Discount" aggregationType="sum"/>
+      <viewAttribute id="CCOUNTRY"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="OID" source="OID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CID" source="CID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Order_Date" source="Order_Date"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Quantity" source="Quantity"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Amount" source="Amount"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Discount" source="Discount"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CNAME" source="CNAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CCITY" source="CCITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CCOUNTRY" source="CCOUNTRY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CID" source="CID"/>
+    </input>
+    <joinAttribute name="CID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_3">
+    <viewAttributes>
+      <viewAttribute id="OID"/>
+      <viewAttribute id="CID"/>
+      <viewAttribute id="Order_Date"/>
+      <viewAttribute id="CNAME"/>
+      <viewAttribute id="CCITY"/>
+      <viewAttribute id="Quantity"/>
+      <viewAttribute id="Amount"/>
+      <viewAttribute id="Discount"/>
+      <viewAttribute id="CCOUNTRY"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="New_Discount" datatype="DOUBLE" expressionLanguage="SQL">
+        <formula>CASE &quot;CCOUNTRY&quot;
+	 WHEN 'India' then 18.5 
+	 ELSE &quot;Discount&quot;
+ END</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="Join_1"/>
+  </calculationView>
+</calculationViews>
+
+<logicalModel id="Projection_3">
+  <attributes>
+    <attribute id="OID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="OID"/>
+      <keyMapping columnObjectName="Projection_3" columnName="OID"/>
+    </attribute>
+    <attribute id="CID" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CID"/>
+      <keyMapping columnObjectName="Projection_3" columnName="CID"/>
+    </attribute>
+    <attribute id="Order_Date" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Order_Date"/>
+      <keyMapping columnObjectName="Projection_3" columnName="Order_Date"/>
+    </attribute>
+    <attribute id="CNAME" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CNAME"/>
+      <keyMapping columnObjectName="Projection_3" columnName="CNAME"/>
+    </attribute>
+    <attribute id="CCITY" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CCITY"/>
+      <keyMapping columnObjectName="Projection_3" columnName="CCITY"/>
+    </attribute>
+    <attribute id="CCOUNTRY" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CCOUNTRY"/>
+      <keyMapping columnObjectName="Projection_3" columnName="CCOUNTRY"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="Quantity" order="7" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="Quantity"/>
+      <measureMapping columnObjectName="Projection_3" columnName="Quantity"/>
+    </measure>
+    <measure id="Amount" order="8" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="Amount"/>
+      <measureMapping columnObjectName="Projection_3" columnName="Amount"/>
+    </measure>
+    <measure id="Discount" order="9" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="Discount"/>
+      <measureMapping columnObjectName="Projection_3" columnName="Discount"/>
+    </measure>
+    <measure id="New_Discount" order="10" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="New_Discount"/>
+      <measureMapping columnObjectName="Projection_3" columnName="New_Discount"/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="241.21650018073555" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+    
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92.00000000000006" y="481.9999976158142"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="302.0000000000001" y="481.9999976158142"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="222.93631278293594" y="341.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="143.470703125"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="148.1328125"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_3" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="222.93631278293594" y="236.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

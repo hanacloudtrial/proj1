@@ -1,0 +1,4 @@
+COLUMN TABLE "z_calmonth" (
+"Year" NVARCHAR(4),
+"Month" NVARCHAR(2)
+)

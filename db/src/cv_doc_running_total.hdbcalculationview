@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="cv_doc_running_total" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="cv_doc_running_total.hdbcalculationview"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="z_calmonth">
+    <resourceUri>z_calmonth</resourceUri>
+  </DataSource>
+  <DataSource id="doc_iem_data">
+    <resourceUri>doc_iem_data</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Month"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="Dummy" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="calmonth" datatype="NVARCHAR" length="6" expressionLanguage="SQL">
+        <formula>CASE  
+	 WHEN LENGTH(&quot;Month&quot;) = 1 then CONCAT(&quot;Year&quot;, concat('0',&quot;Month&quot;)) 
+	 ELSE CONCAT(&quot;Year&quot;,&quot;Month&quot;)
+ END</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="z_calmonth"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+    <viewAttributes>
+      <viewAttribute id="Doc"/>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Month"/>
+      <viewAttribute id="Amount"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="Dummy" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="calmonth" datatype="NVARCHAR" length="6" expressionLanguage="SQL">
+        <formula>CASE  
+	 WHEN LENGTH(&quot;Month&quot;) = 1 then CONCAT(&quot;Year&quot;, concat('0',&quot;Month&quot;)) 
+	 ELSE CONCAT(&quot;Year&quot;,&quot;Month&quot;)
+ END</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="doc_iem_data"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinType="leftOuter">
+    <viewAttributes>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Doc"/>
+      <viewAttribute id="Amount" aggregationType="sum"/>
+      <viewAttribute id="calmonth"/>
+      <viewAttribute id="calmonth_1"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="Year" source="Year"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="calmonth" source="calmonth"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="Doc" source="Doc"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Amount" source="Amount"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="calmonth_1" source="calmonth"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="calmonth" source="calmonth"/>
+    </input>
+    <joinAttribute name="calmonth"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:RankView" id="Rank_1">
+    <viewAttributes>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Doc"/>
+      <viewAttribute id="Amount" aggregationType="sum"/>
+      <viewAttribute id="calmonth"/>
+      <viewAttribute id="calmonth_1"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Join_1"/>
+    <rankingFilter type="RANK" offset="0" offsetReference="FRONT" dynamicPartitionAttributes="false">
+      <order byViewAttributeName="calmonth" direction="ASC"/>
+      <rankThreshold>
+        <value>99999999</value>
+      </rankThreshold>
+      <rankViewAttributeName>Rank_Column</rankViewAttributeName>
+    </rankingFilter>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Rank_1">
+  <attributes>
+    <attribute id="Year" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Year"/>
+      <keyMapping columnObjectName="Rank_1" columnName="Year"/>
+    </attribute>
+    <attribute id="Doc" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Doc"/>
+      <keyMapping columnObjectName="Rank_1" columnName="Doc"/>
+    </attribute>
+    <attribute id="calmonth" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="calmonth"/>
+      <keyMapping columnObjectName="Rank_1" columnName="calmonth"/>
+    </attribute>
+    <attribute id="calmonth_1" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="calmonth_1"/>
+      <keyMapping columnObjectName="Rank_1" columnName="calmonth_1"/>
+    </attribute>
+    <attribute id="Rank_Column" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Rank_Column"/>
+      <keyMapping columnObjectName="Rank_1" columnName="Rank_Column"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="Amount" order="3" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="Amount"/>
+      <measureMapping columnObjectName="Rank_1" columnName="Amount"/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="241.21650018073555" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92.00000000000007" y="481.9999976158142"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="302.0000000000001" y="481.9999976158142"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="222.93631278293594" y="341.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="136.0234375"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="136.0234375"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Rank_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="222.93631278293594" y="236.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

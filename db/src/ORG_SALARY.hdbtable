@@ -1,0 +1,1 @@
+COLUMN TABLE "ORG_SALARY" ("ORG_ID" INT,"Salary" double);

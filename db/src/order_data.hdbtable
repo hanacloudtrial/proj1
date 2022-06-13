@@ -1,0 +1,2 @@
+COLUMN TABLE "order_data"("OID" NVARCHAR(5),"CID" NVARCHAR(5),"Order_Date" DATE,"Quantity" INT,
+"Amount" FLOAT,"Discount" FLOAT)

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="cv_rolling_sum" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="cv_rolling_sum.hdbcalculationview"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="doc_iem_data">
+    <resourceUri>doc_iem_data</resourceUri>
+  </DataSource>
+  <DataSource id="Projection_2$$$$doc_iem_data$$">
+    <resourceUri>doc_iem_data</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:AggregationView" id="Projection_1" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="Doc"/>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Month"/>
+      <viewAttribute id="Amount"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="Dummy" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="doc_iem_data"/>
+    <filter>&quot;Month&quot; IN('1', '2','3')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Projection_2" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="Doc"/>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Month"/>
+      <viewAttribute id="Amount"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="Dummy" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <restrictedViewAttributes/>
+    <input node="Projection_2$$$$doc_iem_data$$"/>
+    <filter>&quot;Month&quot; IN('1', '2','3')</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="Doc"/>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Month"/>
+      <viewAttribute id="Month_1"/>
+    
+      <viewAttribute id="Amount" aggregationType="sum"/>
+      <viewAttribute id="Amount_1" aggregationType="sum"/>
+      <viewAttribute hidden="true" id="JOIN$Dummy$Dummy"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="same_month" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>CASE &quot;Month&quot; 
+	 WHEN &quot;Month_1&quot; then 'Y'
+	 ELSE 'N' 
+ END</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="greater_eq_month" datatype="NVARCHAR" length="13" expressionLanguage="SQL">
+        <formula>CASE 
+	 WHEN &quot;Month&quot;&gt;=&quot;Month_1&quot;  then 'Y' 
+	 ELSE 'N' 
+ END
+</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="Projection_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="Doc" source="Doc"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Year" source="Year"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Month" source="Month"/>
+    
+      <mapping xsi:type="Calculation:AttributeMapping" target="Amount" source="Amount"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$Dummy$Dummy" source="Dummy"/>
+    </input>
+    <input node="Projection_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="Month_1" source="Month"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Amount_1" source="Amount"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$Dummy$Dummy" source="Dummy"/>
+    </input>
+    <joinAttribute name="JOIN$Dummy$Dummy"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="Doc"/>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Month"/>
+      <viewAttribute id="Amount" aggregationType="sum"/>
+      <viewAttribute id="same_month"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Join_1"/>
+    <filter>&quot;same_month&quot;='Y'</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_2" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="Doc"/>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Month"/>
+      <viewAttribute id="greater_eq_month"/>
+      <viewAttribute id="Amount_1" aggregationType="sum"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="Join_1"/>
+    <filter>&quot;greater_eq_month&quot;='Y'</filter>
+  </calculationView>
+  <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+    <viewAttributes>
+      <viewAttribute id="Doc"/>
+      <viewAttribute id="Year"/>
+      <viewAttribute id="Month"/>
+      <viewAttribute id="Amount_1" aggregationType="sum"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Aggregation_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="Doc" source="Doc"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Year" source="Year"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Month" source="Month"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Amount_1" source="Amount_1"/>
+    </input>
+    <input node="Aggregation_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="Doc" source="Doc"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Year" source="Year"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Month" source="Month"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="Amount_1" source="Amount"/>
+    </input>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Union_1">
+  <attributes>
+    <attribute id="Doc" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Doc"/>
+      <keyMapping columnObjectName="Union_1" columnName="Doc"/>
+    </attribute>
+    <attribute id="Year" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Year"/>
+      <keyMapping columnObjectName="Union_1" columnName="Year"/>
+    </attribute>
+    <attribute id="Month" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Month"/>
+      <keyMapping columnObjectName="Union_1" columnName="Month"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="Amount_1" order="4" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="Amount_1"/>
+      <measureMapping columnObjectName="Union_1" columnName="Amount_1"/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="243.1138617779073" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91.99999999999999" y="661.9999964237213"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="302" y="661.9999964237213"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="134.3146497113139" y="501.9999976158142"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="Projection_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="136"/>
+    </shape>
+    <shape modelObjectName="Projection_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="136"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="317.6479830446473" y="356.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Aggregation_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="107.64798304464726" y="356.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="243.11386177790735" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

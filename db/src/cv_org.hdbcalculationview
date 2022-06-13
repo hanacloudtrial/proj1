@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" id="cv_org" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="cv_org.hdbcalculationview"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="ORG_STRUCTURE">
+    <resourceUri>ORG_STRUCTURE</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="ORG_ID"/>
+      <viewAttribute id="PARENT_ID"/>
+      <viewAttribute id="JOB_TITLE"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="No_of_emp" datatype="INTEGER" expressionLanguage="SQL">
+        <formula>1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="ORG_STRUCTURE"/>
+  </calculationView>
+</calculationViews>
+<inlineHierarchy xsi:type="Dimension:ParentChildHierarchy" id="Org_hier" aggregateAllNodes="true" orphanedNodesHandling="ROOT_NODES" rootNodeVisibility="ADD_ROOT_NODE_IF_DEFINED" cacheEnabled="true" cycleHandling="BREAKUP" emptyValueIsNull="false">
+  <descriptions defaultDescription="Org_hier"/>
+  <unassignedMemberProperties mode="FALSE"/>
+  <attributeParentPair attribute="ORG_ID" parentAttribute="PARENT_ID"/>
+</inlineHierarchy>
+<logicalModel id="Projection_1">
+  <attributes>
+    <attribute id="ORG_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ORG_ID"/>
+      <keyMapping columnObjectName="Projection_1" columnName="ORG_ID"/>
+    </attribute>
+    <attribute id="PARENT_ID" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PARENT_ID"/>
+      <keyMapping columnObjectName="Projection_1" columnName="PARENT_ID"/>
+    </attribute>
+    <attribute id="JOB_TITLE" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="JOB_TITLE"/>
+      <keyMapping columnObjectName="Projection_1" columnName="JOB_TITLE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures>
+    <measure id="No_of_emp" order="4" aggregationType="none" measureType="simple" calculatedMeasureType="counter" aggregatable="true" datatype="BIGINT" length="">
+      <exceptionAggregation>
+        <attribute attributeName="ORG_ID"/>
+      </exceptionAggregation>
+      <formula>1</formula>
+      </measure>
+  </calculatedMeasures>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="92" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

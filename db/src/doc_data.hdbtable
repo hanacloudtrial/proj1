@@ -1,0 +1,7 @@
+COLUMN TABLE "doc_data" (
+"Doc" NVARCHAR,
+"Item" NVARCHAR,
+"Year" NVARCHAR,
+"Month" NVARCHAR,
+"Amount" Double
+)

@@ -1,0 +1,4 @@
+COLUMN TABLE "z_month" (
+"Year" NVARCHAR,
+"MONTH" NVARCHAR
+)

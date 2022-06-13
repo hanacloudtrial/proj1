@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="cv_bf_af_agg" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="false">
+<descriptions defaultDescription="cv_bf_af_agg.hdbcalculationview"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="Actuals_Table">
+    <resourceUri>Actuals_Table</resourceUri>
+  </DataSource>
+</dataSources>
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <viewAttributes>
+      <viewAttribute id="PRODUCT_ID"/>
+      <viewAttribute id="SALES_QUANTITY"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="Multip" datatype="INTEGER" expressionLanguage="SQL">
+        <formula>5</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="Before_Agg" datatype="INTEGER" expressionLanguage="SQL">
+        <formula>&quot;SALES_QUANTITY&quot;*&quot;Multip&quot;</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="Actuals_Table"/>
+  </calculationView>
+</calculationViews>
+<logicalModel id="Projection_1">
+  <attributes>
+    <attribute id="PRODUCT_ID" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="PRODUCT_ID"/>
+      <keyMapping columnObjectName="Projection_1" columnName="PRODUCT_ID"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="SALES_QUANTITY" order="2" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="SALES_QUANTITY"/>
+      <measureMapping columnObjectName="Projection_1" columnName="SALES_QUANTITY"/>
+    </measure>
+    <measure id="Multip" order="3" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="Multip"/>
+      <measureMapping columnObjectName="Projection_1" columnName="Multip"/>
+    </measure>
+    <measure id="Before_Agg" order="4" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="Before_Agg"/>
+      <measureMapping columnObjectName="Projection_1" columnName="Before_Agg"/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures>
+    <measure id="After_agg" order="5" aggregationType="sum" measureType="simple" datatype="INTEGER" expressionLanguage="SQL">
+      <formula>&quot;SALES_QUANTITY&quot;*&quot;Multip&quot;</formula>
+      </measure>
+  </calculatedMeasures>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="92" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="92" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>
